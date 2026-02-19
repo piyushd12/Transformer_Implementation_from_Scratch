@@ -4,15 +4,15 @@ import torch.nn as nn
 from utils import MultiHeadAttention, FeedForwardNN, ResidualConnection
 
 class EncoderBlock(nn.Module):
-    def __init__(self, MultiHeadAttentionBlock : MultiHeadAttention, FeedForwardNN : FeedForwardNN, dropout : float) -> None:
+    def __init__(self, MultiHeadAttentionBlock : MultiHeadAttention, FeedForwardNNBlock : FeedForwardNN, dropout : float) -> None:
         super().__init__()
         self.MultiHeadAttentionBlock = MultiHeadAttentionBlock
-        self.FFN = FeedForwardNN
+        self.FFN = FeedForwardNNBlock
         self.dropout = nn.Dropout(dropout)
         self.EncoderResidualConnections = nn.ModuleList([ResidualConnection(dropout),ResidualConnection(dropout)])
 
-    def forward(self,x,src_mask):
-        x = self.EncoderResidualConnections[0](x,lambda x : self.MultiHeadAttentionBlock(x,x,x,src_mask))
+    def forward(self,x,srcMask):
+        x = self.EncoderResidualConnections[0](x,lambda x : self.MultiHeadAttentionBlock(x,x,x,srcMask))
         x = self.EncoderResidualConnections[1](x,self.FFN)
         return x
 
