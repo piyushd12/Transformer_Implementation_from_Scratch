@@ -126,3 +126,15 @@ class ResidualConnection(nn.Module):
     def forward(self,x,prevLayer):
         x = x + self.dropout(prevLayer(x))
         return self.norm(x)
+
+class ProjectionLayer(nn.Module):
+    def __init__(self, d_model : int, vocab_size : int) -> None:
+        super().__init__()
+        self.ProjectionNetwork = nn.Sequential(
+            nn.Linear(d_model,vocab_size),
+            nn.LogSoftmax(dim=-1)
+        )
+
+    def forward(self,x):
+        # (batch, seq_len, d_model) --> (batch, seq_len, vocab_size)
+        return self.ProjectionNetwork(x)
