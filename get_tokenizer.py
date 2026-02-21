@@ -13,11 +13,11 @@ def get_all_sentences(ds,lang):
         yield item['translation'][lang]
 
 def get_or_build_tokenizer(config,ds,lang):
-    tokenizerPath = Path(config['tokenizerFile'].format(lang))
+    tokenizerPath = Path(config['tokenizer_name'].format(lang))
     
     if not Path.exists(tokenizerPath):
         tokenizer = Tokenizer(WordLevel(unk_token='[UNK]'))
-        tokenizer.pre_tokenizer = Whitespace
+        tokenizer.pre_tokenizer = Whitespace()
         trainer = WordLevelTrainer(special_tokens=["[UNK]","[PAD]","[SOS]","[EOS]"],min_frequency=2)
         tokenizer.train_from_iterator(get_all_sentences(ds,lang),trainer=trainer)
         tokenizer.save(str(tokenizerPath))
