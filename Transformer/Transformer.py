@@ -22,7 +22,7 @@ class Transformer(nn.Module):
         src = self.srcPos(src)
         return self.encoder(src,srcMask)
     
-    def decoder(self,tgt,encoderOutput, srcMask, tgtMask):
+    def decode(self,tgt,encoderOutput, srcMask, tgtMask):
         # (batch, seq_len, d_model)
         tgt = self.tgtEmbed(tgt)
         tgt = self.tgtPos(tgt)
