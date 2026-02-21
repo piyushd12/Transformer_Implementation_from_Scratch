@@ -20,22 +20,22 @@ class PositionalEncoding(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
         # Creation of matrix of shape (seq_len, d_model)
-        self.PE = torch.zeros(seq_len,d_model)
+        pe = torch.zeros(seq_len,d_model)
         
         # Creation of vector of shape (seq_len,1)
         position = torch.arange(0,seq_len,dtype=torch.float).unsqueeze(1)
         div_term = torch.exp(torch.arange(0,d_model,2).float() * (-math.log(10000.0) / d_model))    
         
         # Apply sin to even and cos to odd positions    
-        self.PE[:,::2] = torch.sin(position * div_term)
-        self.PE[:,1::2] = torch.cos(position * div_term)
+        pe[:,::2] = torch.sin(position * div_term)
+        pe[:,1::2] = torch.cos(position * div_term)
 
-        PE = self.PE.unsqueeze(0) # Dimensions - (1, seq_len, d_model)
+        pe = pe.unsqueeze(0) # Dimensions - (1, seq_len, d_model)
 
-        self.register_buffer('PE', PE) # This will save the PE while saving the model but will not add it to the learnable parameters
+        self.register_buffer('pe', pe) # This will save the PE while saving the model but will not add it to the learnable parameters
 
     def forward(self,x):
-        x = x + (self.PE[:,:x.shape[1],:]).requires_grad_(False)
+        x = x + (self.pe[:,:x.shape[1],:]).requires_grad_(False)
         return self.dropout(x)
 
 class LayerNormalizaion(nn.Module):
@@ -117,9 +117,8 @@ class MultiHeadAttention(nn.Module):
         return self.w_o(x)
 
 class ResidualConnection(nn.Module):
-
     def __init__(self, dropout : float) -> None:
-        super().__init__()
+        super().__init__()  
         self.dropout = nn.Dropout(dropout)
         self.norm = LayerNormalizaion()
 
